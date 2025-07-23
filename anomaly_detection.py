@@ -1,4 +1,5 @@
 import streamlit as st
+import numpy as np
 
 def show_anomaly_detection(df):
     st.subheader("Anomaly Detection and Alerts")
