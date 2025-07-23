@@ -1,5 +1,6 @@
 import streamlit as st
 import numpy as np
+import pandas as pd
 
 def show_batch_mixing_yield(df):
     st.subheader("Batch Mixing and Yield Model")
