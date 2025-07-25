@@ -3,7 +3,6 @@ import pandas as pd
 from utils import generate_sample_data
 
 def data_upload_sidebar():
-    st.sidebar.image("https://images.unsplash.com/photo-1519125323398-675f0ddb6308?fit=crop&w=600&q=80", use_column_width=True)
     st.sidebar.title("Data Upload & Settings")
     data_source = st.sidebar.radio("Select Data Source", ("Upload CSV", "Use Sample Data"))
     uploaded_file = st.sidebar.file_uploader("Upload your CSV data", type=["csv"]) if data_source == "Upload CSV" else None
