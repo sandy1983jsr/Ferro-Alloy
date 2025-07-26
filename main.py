@@ -14,30 +14,36 @@ from styles import set_custom_style
 def main():
     st.set_page_config(page_title="Ferro Alloy Plant Optimization Dashboard", layout="wide", page_icon=":factory:")
     set_custom_style()
-    df = data_upload_sidebar()
-    if df is None:
-        st.warning("Please upload a .csv file or use the sample data to continue.")
-        return
+
+    # Arrange sidebar (left pane)
+    with st.sidebar:
+        st.header("Data Selection")
+        st.write("Choose a CSV file to upload or use sample data for analysis.")
+        df = data_upload_sidebar()  # This should handle file upload and sample data selection
+
+        st.markdown("---")
+        st.header("Dashboard Modules")
+        menu_options = [
+            "Materials & Energy Balance Engine", 
+            "Furnace Analytics & Optimization", 
+            "Electrode Paste Optimizer",
+            "Conveyor & Utility Efficiency",
+            "Batch Mixing & Yield Model", 
+            "Anomaly Detection & Alerts",
+            "Scenario Simulator", 
+            "Cost & GHG Dashboard"
+        ]
+        selected_tab = st.radio("Select a module:", menu_options)
 
     st.title("Ferro Alloy Plant Optimization Dashboard")
     st.write(
-        "This dashboard provides a comprehensive suite of analytics for energy and materials optimization "
-        "at Carbon Resources' ferro alloy plant. Use the menu on the right to explore different modules and optimization opportunities."
+        "This dashboard provides a suite of analytics for energy and materials optimization "
+        "at Carbon Resources' ferro alloy plant. Use the left menu to upload data and explore modules."
     )
 
-    # Sidebar menu (right pane)
-    st.sidebar.header("Dashboard Modules")
-    menu_options = [
-        "Materials & Energy Balance Engine", 
-        "Furnace Analytics & Optimization", 
-        "Electrode Paste Optimizer",
-        "Conveyor & Utility Efficiency",
-        "Batch Mixing & Yield Model", 
-        "Anomaly Detection & Alerts",
-        "Scenario Simulator", 
-        "Cost & GHG Dashboard"
-    ]
-    selected_tab = st.sidebar.radio("Select a module:", menu_options)
+    if df is None:
+        st.info("Please upload a .csv file or use the sample data to continue.")
+        return
 
     # Show content based on active tab
     if selected_tab == "Materials & Energy Balance Engine":
