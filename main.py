@@ -25,28 +25,37 @@ def main():
         "at Carbon Resources' ferro alloy plant. Use the tabs below to explore different modules and optimization opportunities."
     )
 
-    tab_titles = [
-        "Materials & Energy Balance Engine", "Furnace Analytics & Optimization", "Electrode Paste Optimizer",
-        "Conveyor & Utility Efficiency", "Batch Mixing & Yield Model", "Anomaly Detection & Alerts",
-        "Scenario Simulator", "Cost & GHG Dashboard"
+    tab_row1 = [
+        "Materials & Energy Balance Engine", "Furnace Analytics & Optimization", "Electrode Paste Optimizer", "Conveyor & Utility Efficiency"
     ]
-    tabs = st.tabs(tab_titles)
+    tab_row2 = [
+        "Batch Mixing & Yield Model", "Anomaly Detection & Alerts", "Scenario Simulator", "Cost & GHG Dashboard"
+    ]
 
-    with tabs[0]:
+    st.markdown("#### Main Modules")
+    selected_tab1 = st.radio("Select Tab (Row 1):", tab_row1, horizontal=True, key="row1_radio")
+    st.markdown("#### More Modules")
+    selected_tab2 = st.radio("Select Tab (Row 2):", tab_row2, horizontal=True, key="row2_radio")
+
+    # Only one tab active at a time
+    active_tab = selected_tab1 if selected_tab1 != tab_row1[0] else selected_tab2
+
+    # Show content based on active tab
+    if active_tab == "Materials & Energy Balance Engine":
         show_materials_energy_balance(df)
-    with tabs[1]:
+    elif active_tab == "Furnace Analytics & Optimization":
         show_furnace_analytics(df)
-    with tabs[2]:
+    elif active_tab == "Electrode Paste Optimizer":
         show_electrode_optimizer(df)
-    with tabs[3]:
+    elif active_tab == "Conveyor & Utility Efficiency":
         show_conveyor_utility_efficiency(df)
-    with tabs[4]:
+    elif active_tab == "Batch Mixing & Yield Model":
         show_batch_mixing_yield(df)
-    with tabs[5]:
+    elif active_tab == "Anomaly Detection & Alerts":
         show_anomaly_detection(df)
-    with tabs[6]:
+    elif active_tab == "Scenario Simulator":
         show_scenario_simulator(df)
-    with tabs[7]:
+    elif active_tab == "Cost & GHG Dashboard":
         show_cost_ghg_dashboard(df)
 
 if __name__ == "__main__":
