@@ -24,12 +24,29 @@ def show_cost_ghg_dashboard(df):
             df[prod] = clean_numeric(df[prod])
             tons = df[prod] / 1000
             # Only plot if there is some valid production
-            if tons.notnull().sum() > 0 and (tons > 0).sum() > 0:
+            valid_mask = tons.notnull() & (tons > 0)
+            if valid_mask.sum() > 0:
                 kwh_per_ton = df['Electricity_Consumed_kWh'] / tons
                 kwh_per_ton = kwh_per_ton.replace([np.inf, -np.inf], np.nan)
-                if kwh_per_ton.notnull().sum() > 0:
-                    st.line_chart(kwh_per_ton, use_container_width=True)
-                    st.write(f"Avg Electricity per ton for {prod}: {kwh_per_ton.mean():.2f} kWh/t")
+                # Prepare a cleaned DataFrame for plotting
+                plot_df = pd.DataFrame({
+                    'Date': df['Date'],
+                    'Electricity_per_Ton': kwh_per_ton
+                }).dropna()
+                if not plot_df.empty:
+                    fig = px.line(
+                        plot_df,
+                        x='Date',
+                        y='Electricity_per_Ton',
+                        title=f'Electricity Consumption per Ton for {prod}',
+                        labels={
+                            'Date': 'Production Date',
+                            'Electricity_per_Ton': 'Electricity Consumed (kWh/ton)'
+                        }
+                    )
+                    fig.update_layout(xaxis_title='Production Date', yaxis_title='Electricity Consumed (kWh/ton)')
+                    st.plotly_chart(fig, use_container_width=True)
+                    st.write(f"Avg Electricity per ton for {prod}: {plot_df['Electricity_per_Ton'].mean():.2f} kWh/t")
                     any_graph = True
     if not any_graph:
         st.warning("No valid product data found to plot electricity consumption per ton.")
@@ -45,10 +62,17 @@ def show_cost_ghg_dashboard(df):
             df[col] = clean_numeric(df[col])
         feed_means = df[feed_cols_present].mean()
         if feed_means.sum() > 0:
-            st.plotly_chart(px.pie(
-                values=feed_means.values, names=feed_means.index,
-                title="Average Daily Feed Mix", color_discrete_sequence=px.colors.sequential.Oranges
-            ))
+            fig_pie = px.pie(
+                names=feed_means.index,
+                values=feed_means.values,
+                title="Average Daily Feed Mix",
+                color_discrete_sequence=px.colors.sequential.Oranges
+            )
+            fig_pie.update_traces(textinfo='percent+label')
+            fig_pie.update_layout(
+                legend_title_text='Feed Material',
+            )
+            st.plotly_chart(fig_pie, use_container_width=True)
         else:
             st.warning("No valid feed mix data found to plot pie chart.")
     else:
