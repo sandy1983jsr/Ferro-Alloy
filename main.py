@@ -17,20 +17,19 @@ def main():
 
     st.sidebar.header("Data Selection")
     st.sidebar.write("Choose a CSV file to upload or use sample data for analysis.")
-    df = data_upload_sidebar()  # File upload/sample data
+    df = data_upload_sidebar()
 
     st.title("Ferro Alloy Plant Optimization Dashboard")
     st.write(
         "This dashboard provides analytics for energy and materials optimization "
-        "at Carbon Resources' ferro alloy plant. Use the tabs below to explore modules."
+        "at Carbon Resources' ferro alloy plant. Use the module selector below to explore modules."
     )
 
     if df is None:
         st.info("Please upload a .csv file or use the sample data to continue.")
         return
 
-    # Simple tab arrangement
-    tabs = st.tabs([
+    menu_options = [
         "Materials & Energy Balance Engine", 
         "Furnace Analytics & Optimization", 
         "Electrode Paste Optimizer",
@@ -39,23 +38,27 @@ def main():
         "Anomaly Detection & Alerts",
         "Scenario Simulator", 
         "Cost & GHG Dashboard"
-    ])
+    ]
 
-    with tabs[0]:
+    # Use a selectbox for navigation (acts like a dropdown menu)
+    selected_tab = st.selectbox("Select a module:", menu_options, index=0)
+
+    # Show content based on selection
+    if selected_tab == "Materials & Energy Balance Engine":
         show_materials_energy_balance(df)
-    with tabs[1]:
+    elif selected_tab == "Furnace Analytics & Optimization":
         show_furnace_analytics(df)
-    with tabs[2]:
+    elif selected_tab == "Electrode Paste Optimizer":
         show_electrode_optimizer(df)
-    with tabs[3]:
+    elif selected_tab == "Conveyor & Utility Efficiency":
         show_conveyor_utility_efficiency(df)
-    with tabs[4]:
+    elif selected_tab == "Batch Mixing & Yield Model":
         show_batch_mixing_yield(df)
-    with tabs[5]:
+    elif selected_tab == "Anomaly Detection & Alerts":
         show_anomaly_detection(df)
-    with tabs[6]:
+    elif selected_tab == "Scenario Simulator":
         show_scenario_simulator(df)
-    with tabs[7]:
+    elif selected_tab == "Cost & GHG Dashboard":
         show_cost_ghg_dashboard(df)
 
 if __name__ == "__main__":
