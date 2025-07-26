@@ -22,40 +22,39 @@ def main():
     st.title("Ferro Alloy Plant Optimization Dashboard")
     st.write(
         "This dashboard provides a comprehensive suite of analytics for energy and materials optimization "
-        "at Carbon Resources' ferro alloy plant. Use the tabs below to explore different modules and optimization opportunities."
+        "at Carbon Resources' ferro alloy plant. Use the menu on the right to explore different modules and optimization opportunities."
     )
 
-    tab_row1 = [
-        "Materials & Energy Balance Engine", "Furnace Analytics & Optimization", "Electrode Paste Optimizer", "Conveyor & Utility Efficiency"
+    # Sidebar menu (right pane)
+    st.sidebar.header("Dashboard Modules")
+    menu_options = [
+        "Materials & Energy Balance Engine", 
+        "Furnace Analytics & Optimization", 
+        "Electrode Paste Optimizer",
+        "Conveyor & Utility Efficiency",
+        "Batch Mixing & Yield Model", 
+        "Anomaly Detection & Alerts",
+        "Scenario Simulator", 
+        "Cost & GHG Dashboard"
     ]
-    tab_row2 = [
-        "Batch Mixing & Yield Model", "Anomaly Detection & Alerts", "Scenario Simulator", "Cost & GHG Dashboard"
-    ]
-
-    st.markdown("#### Main Modules")
-    selected_tab1 = st.radio("Select Tab (Row 1):", tab_row1, horizontal=True, key="row1_radio")
-    st.markdown("#### More Modules")
-    selected_tab2 = st.radio("Select Tab (Row 2):", tab_row2, horizontal=True, key="row2_radio")
-
-    # Only one tab active at a time
-    active_tab = selected_tab1 if selected_tab1 != tab_row1[0] else selected_tab2
+    selected_tab = st.sidebar.radio("Select a module:", menu_options)
 
     # Show content based on active tab
-    if active_tab == "Materials & Energy Balance Engine":
+    if selected_tab == "Materials & Energy Balance Engine":
         show_materials_energy_balance(df)
-    elif active_tab == "Furnace Analytics & Optimization":
+    elif selected_tab == "Furnace Analytics & Optimization":
         show_furnace_analytics(df)
-    elif active_tab == "Electrode Paste Optimizer":
+    elif selected_tab == "Electrode Paste Optimizer":
         show_electrode_optimizer(df)
-    elif active_tab == "Conveyor & Utility Efficiency":
+    elif selected_tab == "Conveyor & Utility Efficiency":
         show_conveyor_utility_efficiency(df)
-    elif active_tab == "Batch Mixing & Yield Model":
+    elif selected_tab == "Batch Mixing & Yield Model":
         show_batch_mixing_yield(df)
-    elif active_tab == "Anomaly Detection & Alerts":
+    elif selected_tab == "Anomaly Detection & Alerts":
         show_anomaly_detection(df)
-    elif active_tab == "Scenario Simulator":
+    elif selected_tab == "Scenario Simulator":
         show_scenario_simulator(df)
-    elif active_tab == "Cost & GHG Dashboard":
+    elif selected_tab == "Cost & GHG Dashboard":
         show_cost_ghg_dashboard(df)
 
 if __name__ == "__main__":
