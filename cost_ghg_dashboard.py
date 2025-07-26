@@ -1,6 +1,7 @@
 import streamlit as st
 import plotly.express as px
 import numpy as np
+import pandas as pd  # <-- Add this import!
 
 def show_cost_ghg_dashboard(df):
     st.subheader("Resource Utilization Dashboard")
@@ -17,7 +18,6 @@ def show_cost_ghg_dashboard(df):
             df['Electricity_Consumed_kWh'] = pd.to_numeric(df['Electricity_Consumed_kWh'], errors='coerce')
             df[prod] = pd.to_numeric(df[prod], errors='coerce')
             tons = df[prod] / 1000
-            # Avoid division by zero
             tons = tons.replace(0, np.nan)
             kwh_per_ton = df['Electricity_Consumed_kWh'] / tons
             st.line_chart(kwh_per_ton, use_container_width=True)
