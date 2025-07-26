@@ -5,10 +5,10 @@ import numpy as np
 def show_scenario_simulator(df):
     # Sidebar inputs for simulation parameters
     elec_price = st.sidebar.number_input(
-        "Electricity Price (INR per kWh)", value=6, min_value=5.5, max_value=6.5, step=0.1
+        "Electricity Price (INR per kWh)", value=6.0, min_value=5.5, max_value=6.5, step=0.1
     )
     ore_price = st.sidebar.number_input(
-        "Manganese Ore Price (INR per kg)", value=14700, min_value=10000, max_value=25000.0, step=100
+        "Manganese Ore Price (INR per kg)", value=14700.0, min_value=10000.0, max_value=25000.0, step=100.0
     )
 
     # Ensure columns are numeric
