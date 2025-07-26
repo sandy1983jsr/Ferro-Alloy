@@ -12,9 +12,9 @@ def show_scenario_simulator(df):
     )
 
     # Ensure columns are numeric
-   # df['Electricity_Consumed_kWh'] = pd.to_numeric(df['Electricity_Consumed_kWh'], errors='coerce')
-    # df['Furnace_Efficiency_%'] = pd.to_numeric(df['Furnace_Efficiency_%'], errors='coerce')
-    # df['Manganese_Ore_kg'] = pd.to_numeric(df['Manganese_Ore_kg'], errors='coerce')
+    df['Electricity_Consumed_kWh'] = pd.to_numeric(df['Electricity_Consumed_kWh'], errors='coerce')
+    df['Furnace_Efficiency_%'] = pd.to_numeric(df['Furnace_Efficiency_%'], errors='coerce')
+    df['Manganese_Ore_kg'] = pd.to_numeric(df['Manganese_Ore_kg'], errors='coerce')
 
     # Drop rows with missing values
     sim_df = df.dropna(subset=['Electricity_Consumed_kWh', 'Furnace_Efficiency_%', 'Manganese_Ore_kg']).copy()
