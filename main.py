@@ -15,52 +15,47 @@ def main():
     st.set_page_config(page_title="Ferro Alloy Plant Optimization Dashboard", layout="wide", page_icon=":factory:")
     set_custom_style()
 
-    # Arrange sidebar (left pane)
-    with st.sidebar:
-        st.header("Data Selection")
-        st.write("Choose a CSV file to upload or use sample data for analysis.")
-        df = data_upload_sidebar()  # This should handle file upload and sample data selection
-
-        st.markdown("---")
-        st.header("Dashboard Modules")
-        menu_options = [
-            "Materials & Energy Balance Engine", 
-            "Furnace Analytics & Optimization", 
-            "Electrode Paste Optimizer",
-            "Conveyor & Utility Efficiency",
-            "Batch Mixing & Yield Model", 
-            "Anomaly Detection & Alerts",
-            "Scenario Simulator", 
-            "Cost & GHG Dashboard"
-        ]
-        selected_tab = st.radio("Select a module:", menu_options)
+    st.sidebar.header("Data Selection")
+    st.sidebar.write("Choose a CSV file to upload or use sample data for analysis.")
+    df = data_upload_sidebar()  # File upload/sample data
 
     st.title("Ferro Alloy Plant Optimization Dashboard")
     st.write(
-        "This dashboard provides a suite of analytics for energy and materials optimization "
-        "at Carbon Resources' ferro alloy plant. Use the left menu to upload data and explore modules."
+        "This dashboard provides analytics for energy and materials optimization "
+        "at Carbon Resources' ferro alloy plant. Use the tabs below to explore modules."
     )
 
     if df is None:
         st.info("Please upload a .csv file or use the sample data to continue.")
         return
 
-    # Show content based on active tab
-    if selected_tab == "Materials & Energy Balance Engine":
+    # Simple tab arrangement
+    tabs = st.tabs([
+        "Materials & Energy Balance Engine", 
+        "Furnace Analytics & Optimization", 
+        "Electrode Paste Optimizer",
+        "Conveyor & Utility Efficiency",
+        "Batch Mixing & Yield Model", 
+        "Anomaly Detection & Alerts",
+        "Scenario Simulator", 
+        "Cost & GHG Dashboard"
+    ])
+
+    with tabs[0]:
         show_materials_energy_balance(df)
-    elif selected_tab == "Furnace Analytics & Optimization":
+    with tabs[1]:
         show_furnace_analytics(df)
-    elif selected_tab == "Electrode Paste Optimizer":
+    with tabs[2]:
         show_electrode_optimizer(df)
-    elif selected_tab == "Conveyor & Utility Efficiency":
+    with tabs[3]:
         show_conveyor_utility_efficiency(df)
-    elif selected_tab == "Batch Mixing & Yield Model":
+    with tabs[4]:
         show_batch_mixing_yield(df)
-    elif selected_tab == "Anomaly Detection & Alerts":
+    with tabs[5]:
         show_anomaly_detection(df)
-    elif selected_tab == "Scenario Simulator":
+    with tabs[6]:
         show_scenario_simulator(df)
-    elif selected_tab == "Cost & GHG Dashboard":
+    with tabs[7]:
         show_cost_ghg_dashboard(df)
 
 if __name__ == "__main__":
