@@ -3,30 +3,44 @@ import plotly.graph_objects as go
 
 def show_materials_energy_balance(df):
     st.subheader("Materials and Energy Balance Engine")
-    st.write("Detailed mass and energy balance, including heat transfer modes.")
+    st.write("Overview of all feed materials and product outputs.")
 
-    # Advanced energy loss calculation
-    # Assume: Q_loss = Q_conduction + Q_convection + Q_radiation (simplified)
-    Q_total = df['Electricity_Consumed_kWh'].mean() * 3600  # convert to kJ
-    Q_conduction = 0.2 * Q_total  # Example: 20% conduction loss
-    Q_convection = 0.15 * Q_total
-    Q_radiation = 0.1 * Q_total
-    Q_useful = Q_total - (Q_conduction + Q_convection + Q_radiation)
+    # Material inputs and outputs
+    input_cols = [
+        'Manganese_Ore_kg', 'Slag_Ferro_Manganese_kg', 'Remelts_kg', 
+        'Coal_kg', 'Coke_kg', 'Dolomite_kg', 'Quartz_kg', 'Quartzite_kg'
+    ]
+    prod_cols = [
+        'HC_Low_Boron_kg', 'SiMn_HC_kg', 'SiMn_MC_kg', 'SiMn_LC_kg', 'SiMn_ELC_kg'
+    ]
+    # Show summary statistics
+    st.markdown("**Inputs (mean daily):**")
+    st.dataframe(df[input_cols].mean().to_frame("Mean (kg)"))
 
-    st.metric("Avg. Useful Energy (kJ)", f"{int(Q_useful):,}")
-    st.metric("Conduction Loss (kJ)", f"{int(Q_conduction):,}")
-    st.metric("Convection Loss (kJ)", f"{int(Q_convection):,}")
-    st.metric("Radiation Loss (kJ)", f"{int(Q_radiation):,}")
+    st.markdown("**Production Outputs (mean daily):**")
+    st.dataframe(df[prod_cols].mean().to_frame("Mean (kg)"))
 
-    # Sankey Diagram for Materials Flow
-    label = ["Raw Material", "Batch Weight", "Metal", "Slag"]
+    # Sankey Diagram
+    label = input_cols + prod_cols
+    source = list(range(len(input_cols))) * len(prod_cols)
+    target = [len(input_cols) + i for i in range(len(prod_cols)) for _ in input_cols]
+    value = [df[col].mean() for col in input_cols for _ in prod_cols]
+
+    # For illustration, connect each input to all outputs equally (customize as needed)
     fig = go.Figure(data=[go.Sankey(
-        node = dict(
-            pad = 15, thickness = 20, line = dict(color = "black", width = 0.5),
-            label = label, color = ["#f95d1d", "#cccccc", "#b0b0b0", "#e6e6e6"]),
-        link = dict(
-            source = [0, 1, 1], target = [1, 2, 3],
-            value = [df['Raw_Material_Input_kg'].mean(), df['Metal_Produced_kg'].mean(), df['Slag_Produced_kg'].mean()],
-            color = ["#f95d1d", "#b0b0b0", "#e6e6e6"]
-        ))])
+        node=dict(
+            pad=15, thickness=20,
+            label=label,
+            color=["#f95d1d"] * len(input_cols) + ["#cccccc"] * len(prod_cols)
+        ),
+        link=dict(
+            source=source,
+            target=target,
+            value=value,
+            color=["#f95d1d"] * len(source)
+        )
+    )])
     st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("#### Electricity Consumption (kWh)")
+    st.line_chart(df.set_index('Date')['Electricity_Consumed_kWh'])
