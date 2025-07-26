@@ -13,8 +13,7 @@ def show_cost_ghg_dashboard(df):
     for prod in prod_cols:
         if prod in df.columns:
             # Avoid division by zero
-            tons = df['SiMn_MC_kg'] / 1000
-            kwh_per_ton = df['Electricity_Consumed_kWh'] / tons
+            kwh_per_ton = df['Electricity_Consumed_kWh'] / ( df['SiMn_MC_kg'] / 1000)
             st.line_chart(kwh_per_ton, use_container_width=True)
             st.write(f"Avg Electricity per ton for {prod}: {kwh_per_ton.mean():.2f} kWh/t")
 
