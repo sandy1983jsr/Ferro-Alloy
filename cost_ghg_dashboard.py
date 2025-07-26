@@ -2,18 +2,30 @@ import streamlit as st
 import plotly.express as px
 
 def show_cost_ghg_dashboard(df):
-    st.subheader("Cost and GHG Dashboard")
-    st.write("Cost and emissions attributed by scientific loss root causes.")
+    st.subheader("Resource Utilization Dashboard")
+    st.write("Electricity and feed utilization per product (sample MVP view).")
 
-    # Root cause attribution (example: 70% energy, 20% material, 10% reprocessing)
-    total_cost = df['Cost_USD'].mean()
-    energy_cost = 0.7 * total_cost
-    material_cost = 0.2 * total_cost
-    reprocessing_cost = 0.1 * total_cost
+    prod_cols = [
+        'HC_Low_Boron_kg', 'SiMn_HC_kg', 'SiMn_MC_kg', 'SiMn_LC_kg', 'SiMn_ELC_kg'
+    ]
+    # Electricity per ton product
+    st.markdown("**Electricity Consumption per Ton Product**")
+    for prod in prod_cols:
+        if prod in df.columns:
+            # Avoid division by zero
+            tons = df[prod].replace(0, float("nan")) / 1000
+            kwh_per_ton = df['Electricity_Consumed_kWh'] / tons
+            st.line_chart(kwh_per_ton, use_container_width=True)
+            st.write(f"Avg Electricity per ton for {prod}: {kwh_per_ton.mean():.2f} kWh/t")
 
-    st.metric("Avg. Cost (USD)", f"{int(total_cost):,}")
-    st.metric("Energy Cost (USD)", f"{int(energy_cost):,}")
-    st.metric("Material Cost (USD)", f"{int(material_cost):,}")
-    st.metric("Reprocessing Cost (USD)", f"{int(reprocessing_cost):,}")
-    st.metric("Avg. GHG Emissions (tCO2e)", f"{round(df['GHG_Emissions_tCO2e'].mean(), 2)}")
-    st.plotly_chart(px.line(df, x='Date', y=['Cost_USD', 'GHG_Emissions_tCO2e'], color_discrete_sequence=['#f95d1d', '#cccccc']))
+    # Pie chart of feed mix
+    st.markdown("**Average Feed Mix Composition**")
+    feed_cols = [
+        'Manganese_Ore_kg', 'Slag_Ferro_Manganese_kg', 'Remelts_kg', 
+        'Coal_kg', 'Coke_kg', 'Dolomite_kg', 'Quartz_kg', 'Quartzite_kg'
+    ]
+    feed_means = df[feed_cols].mean()
+    st.plotly_chart(px.pie(
+        values=feed_means.values, names=feed_means.index,
+        title="Average Daily Feed Mix", color_discrete_sequence=px.colors.sequential.Oranges
+    ))
