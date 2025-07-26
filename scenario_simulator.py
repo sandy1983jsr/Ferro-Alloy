@@ -1,23 +1,45 @@
 import streamlit as st
+import pandas as pd
+import numpy as np
 
 def show_scenario_simulator(df):
-    st.subheader("Scenario Simulator")
-    st.write("Physics-based scenario simulation: feed, energy price, efficiency.")
+    # Sidebar inputs for simulation parameters
+    elec_price = st.sidebar.number_input(
+        "Electricity Price (INR per kWh)", value=6, min_value=5.5, max_value=6.5, step=0.1
+    )
+    ore_price = st.sidebar.number_input(
+        "Manganese Ore Price (INR per kg)", value=14700, min_value=10000, max_value=25000.0, step=100
+    )
 
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        mix_adj = st.slider("Batch Mix Ratio Adjustment (%)", -5, 5, 0)
-    with col2:
-        elec_price = st.slider("Electricity Price (USD/kWh)", 0.08, 0.18, 0.12)
-    with col3:
-        eff_adj = st.slider("Furnace Efficiency Adjustment (%)", -3, 3, 0)
+    # Ensure columns are numeric
+    df['Electricity_Consumed_kWh'] = pd.to_numeric(df['Electricity_Consumed_kWh'], errors='coerce')
+    df['Furnace_Efficiency_%'] = pd.to_numeric(df['Furnace_Efficiency_%'], errors='coerce')
+    df['Manganese_Ore_kg'] = pd.to_numeric(df['Manganese_Ore_kg'], errors='coerce')
 
-    # Physics: yield increases with mix ratio, cost with energy/efficiency
-    sim_df = df.copy()
-    sim_df['Batch_Mix_Ratio'] = df['Batch_Mix_Ratio'] * (1 + mix_adj / 100)
-    sim_df['Furnace_Efficiency_%'] = df['Furnace_Efficiency_%'] + eff_adj
-    sim_df['Yield_%'] = sim_df['Yield_%'] * (1 + 0.5 * mix_adj / 100)
-    sim_df['Cost_USD'] = (df['Electricity_Consumed_kWh'] * elec_price) / (sim_df['Furnace_Efficiency_%'] / 100) + (df['Raw_Material_Input_kg'] * 1.1)
+    # Drop rows with missing values
+    sim_df = df.dropna(subset=['Electricity_Consumed_kWh', 'Furnace_Efficiency_%', 'Manganese_Ore_kg']).copy()
 
-    st.line_chart(sim_df.set_index('Date')[['Batch_Mix_Ratio', 'Furnace_Efficiency_%', 'Yield_%', 'Cost_USD']])
-    st.write("Simulated mean cost:", int(sim_df['Cost_USD'].mean()), "USD")
+    # Calculate scenario cost
+    # Example formula:
+    # Cost_USD = (Electricity_Consumed_kWh * elec_price) / (Furnace_Efficiency_% / 100) + (Manganese_Ore_kg * ore_price)
+    sim_df['Cost_USD'] = (
+        (sim_df['Electricity_Consumed_kWh'] * elec_price) / (sim_df['Furnace_Efficiency_%'] / 100)
+        + (sim_df['Manganese_Ore_kg'] * ore_price)
+    )
+
+    st.subheader("Scenario Simulation Results")
+    st.dataframe(sim_df[["Date", "Electricity_Consumed_kWh", "Furnace_Efficiency_%", "Manganese_Ore_kg", "Cost_USD"]])
+
+    # Optionally, plot results
+    st.line_chart(sim_df.set_index("Date")["Cost_USD"])
+
+# Example usage:
+if __name__ == "__main__":
+    # Example data
+    df = pd.DataFrame({
+        "Date": pd.date_range("2025-01-01", periods=30, freq="D"),
+        "Electricity_Consumed_kWh": np.random.randint(3200, 3600, size=30),
+        "Furnace_Efficiency_%": np.random.uniform(85, 88, size=30),
+        "Manganese_Ore_kg": np.random.randint(9000, 10500, size=30),
+    })
+    show_scenario_simulator(df)
